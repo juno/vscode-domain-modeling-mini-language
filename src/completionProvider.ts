@@ -1,7 +1,7 @@
 import * as vscode from 'vscode'
 import { parse } from './parser'
 
-const KEYWORD_ITEMS = ['data', 'behavior'].map(kw => {
+const KEYWORD_ITEMS = ['data', 'behavior', 'workflow', 'substep'].map(kw => {
   const item = new vscode.CompletionItem(kw, vscode.CompletionItemKind.Keyword)
   item.detail = 'dmml keyword'
   return item

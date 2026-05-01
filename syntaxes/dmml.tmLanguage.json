@@ -8,6 +8,8 @@
     { "include": "#keywords" },
     { "include": "#operators" },
     { "include": "#arrow" },
+    { "include": "#label" },
+    { "include": "#string" },
     { "include": "#optional" },
     { "include": "#identifier" }
   ],
@@ -22,7 +24,7 @@
     },
     "keywords": {
       "name": "keyword.control.dmml",
-      "match": "\\b(data|behavior)\\b"
+      "match": "\\b(data|behavior|workflow|substep)\\b"
     },
     "operators": {
       "name": "keyword.operator.dmml",
@@ -31,6 +33,14 @@
     "arrow": {
       "name": "keyword.operator.arrow.dmml",
       "match": "->"
+    },
+    "label": {
+      "name": "keyword.other.label.dmml",
+      "match": "\\b(input|output|dependencies)\\s*:"
+    },
+    "string": {
+      "name": "string.quoted.double.dmml",
+      "match": "\"[^\"]*\""
     },
     "optional": {
       "name": "keyword.operator.optional.dmml",
