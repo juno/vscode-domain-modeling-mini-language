@@ -76,8 +76,8 @@ export function parse(text: string): ParseResult {
     const startLine = group.startLine
     const range = makeRange(startLine, 0, rawLines[startLine].length)
 
-    const dataMatch = /^\s*data(.*)/.exec(fullText)
-    const behaviorMatch = /^\s*behavior(.*)/.exec(fullText)
+    const dataMatch = /^\s*data\b(.*)/.exec(fullText)
+    const behaviorMatch = /^\s*behavior\b(.*)/.exec(fullText)
 
     if (dataMatch) {
       const rest = dataMatch[1].trim()
