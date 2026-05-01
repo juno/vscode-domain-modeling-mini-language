@@ -1,0 +1,54 @@
+{
+  "name": "vscode-domain-modeling-mini-language",
+  "displayName": "Domain Modeling Mini Language",
+  "description": "Syntax highlighting and language support for .dmml files",
+  "version": "0.0.1",
+  "engines": { "vscode": "^1.74.0" },
+  "categories": ["Programming Languages"],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "dmml",
+        "aliases": ["Domain Modeling Mini Language", "dmml"],
+        "extensions": [".dmml"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "dmml",
+        "scopeName": "source.dmml",
+        "path": "./syntaxes/dmml.tmLanguage.json"
+      },
+      {
+        "scopeName": "markdown.dmml.codeblock",
+        "path": "./syntaxes/dmml.markdown.tmLanguage.json",
+        "injectTo": ["text.html.markdown"],
+        "embeddedLanguages": {
+          "meta.embedded.block.dmml": "dmml"
+        }
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.74.0",
+    "@types/jest": "^29.5.0",
+    "@types/node": "^18.0.0",
+    "jest": "^29.5.0",
+    "ts-jest": "^29.1.0",
+    "typescript": "^5.1.0"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "testMatch": ["**/src/__tests__/**/*.test.ts"]
+  }
+}
