@@ -25,7 +25,7 @@ export class DmmlCompletionProvider implements vscode.CompletionItemProvider {
     }
 
     // 行頭: data / behavior キーワードを候補に出す
-    if (/^\s*\w*$/.test(linePrefix)) {
+    if (/^\s*[\p{L}\p{N}_]*$/u.test(linePrefix)) {
       return KEYWORD_ITEMS
     }
 

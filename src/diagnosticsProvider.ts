@@ -1,7 +1,7 @@
 import * as vscode from 'vscode'
 import { parse } from './parser'
 
-export class DmmlDiagnosticsProvider {
+export class DmmlDiagnosticsProvider implements vscode.Disposable {
   private collection = vscode.languages.createDiagnosticCollection('dmml')
 
   update(document: vscode.TextDocument): void {
