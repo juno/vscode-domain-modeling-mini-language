@@ -38,7 +38,7 @@
     },
     "identifier": {
       "name": "entity.name.type.dmml",
-      "match": "[\\p{L}\\p{N}_]+"
+      "match": "[\\p{L}_][\\p{L}\\p{N}_]*"
     }
   }
 }
