@@ -17,7 +17,8 @@ export function activate(context: vscode.ExtensionContext): void {
     ),
     vscode.languages.registerHoverProvider(SELECTOR, new DmmlHoverProvider()),
     vscode.workspace.onDidChangeTextDocument(e => diagnostics.update(e.document)),
-    vscode.workspace.onDidOpenTextDocument(doc => diagnostics.update(doc))
+    vscode.workspace.onDidOpenTextDocument(doc => diagnostics.update(doc)),
+    vscode.workspace.onDidCloseTextDocument(doc => diagnostics.clear(doc.uri))
   )
 
   // すでに開かれているドキュメントにも診断を実行

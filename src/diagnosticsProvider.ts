@@ -21,6 +21,10 @@ export class DmmlDiagnosticsProvider implements vscode.Disposable {
     this.collection.set(document.uri, diagnostics)
   }
 
+  clear(uri: vscode.Uri): void {
+    this.collection.delete(uri)
+  }
+
   dispose(): void {
     this.collection.dispose()
   }
