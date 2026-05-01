@@ -10,7 +10,7 @@ export interface Range {
 
 export interface SymbolInfo {
   name: string
-  kind: 'data' | 'behavior'
+  kind: 'data' | 'behavior' | 'workflow' | 'substep'
   definition: string
   range: Range
 }
@@ -52,7 +52,8 @@ function groupLines(rawLines: string[]): StatementGroup[] {
       continue
     }
 
-    const isContinuation = /^\s+(AND|OR)\b/.test(stripped) && current !== null
+    // すべてのインデント行を継続行として扱う（AND/OR だけでなく input:/output: なども含む）
+    const isContinuation = /^\s+/.test(stripped) && current !== null
 
     if (isContinuation) {
       current!.lines.push({ lineNumber: i, text: stripped })
@@ -64,6 +65,44 @@ function groupLines(rawLines: string[]): StatementGroup[] {
 
   if (current) groups.push(current)
   return groups
+}
+
+function parseWorkflowLike(
+  keyword: 'workflow' | 'substep',
+  rest: string,
+  range: Range,
+  errors: ParseError[],
+  symbols: Map<string, SymbolInfo>,
+  fullText: string
+): void {
+  if (!rest.startsWith('"')) {
+    errors.push({ message: `\`${keyword}\` の後に名前（\`"..."\`）がありません`, range })
+    return
+  }
+  const nameMatch = /^"([^"]+)"\s*(.*)/.exec(rest)
+  if (!nameMatch) {
+    errors.push({ message: `\`${keyword}\` の後に名前（\`"..."\`）がありません`, range })
+    return
+  }
+  const name = nameMatch[1]
+  const afterName = nameMatch[2].trim()
+  if (!afterName.startsWith('=')) {
+    errors.push({ message: '`=` がありません', range })
+    return
+  }
+  const body = afterName.slice(1).trim()
+  let hasError = false
+  if (!body.includes('input:')) {
+    errors.push({ message: '`input:` がありません', range })
+    hasError = true
+  }
+  if (!body.includes('output:')) {
+    errors.push({ message: '`output:` がありません', range })
+    hasError = true
+  }
+  if (!hasError) {
+    symbols.set(name, { name, kind: keyword, definition: fullText.trim(), range })
+  }
 }
 
 export function parse(text: string): ParseResult {
@@ -78,6 +117,8 @@ export function parse(text: string): ParseResult {
 
     const dataMatch = /^\s*data\b(.*)/.exec(fullText)
     const behaviorMatch = /^\s*behavior\b(.*)/.exec(fullText)
+    const workflowMatch = /^\s*workflow\b(.*)/.exec(fullText)
+    const substepMatch = /^\s*substep\b(.*)/.exec(fullText)
 
     if (dataMatch) {
       const rest = dataMatch[1].trim()
@@ -135,6 +176,12 @@ export function parse(text: string): ParseResult {
         continue
       }
       symbols.set(name, { name, kind: 'behavior', definition: fullText.trim(), range })
+
+    } else if (workflowMatch) {
+      parseWorkflowLike('workflow', workflowMatch[1].trim(), range, errors, symbols, fullText)
+
+    } else if (substepMatch) {
+      parseWorkflowLike('substep', substepMatch[1].trim(), range, errors, symbols, fullText)
     }
   }
 

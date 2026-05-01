@@ -115,3 +115,84 @@ describe('parse - シンボル情報', () => {
     expect(result.symbols.get('年齢')!.range.start.line).toBe(1)
   })
 })
+
+describe('parse - workflow 定義', () => {
+  it('単純な workflow 定義をパースする', () => {
+    const text = 'workflow "注文する" =\n  input: 注文書\n  output: 注文'
+    const result = parse(text)
+    expect(result.errors).toHaveLength(0)
+    expect(result.symbols.has('注文する')).toBe(true)
+    expect(result.symbols.get('注文する')!.kind).toBe('workflow')
+  })
+
+  it('複数行 output の workflow をパースする', () => {
+    const text = 'workflow "注文する" =\n  input: 注文書\n  output:\n    受注\n    OR エラー'
+    const result = parse(text)
+    expect(result.errors).toHaveLength(0)
+    expect(result.symbols.has('注文する')).toBe(true)
+  })
+
+  it('workflow に名前がない場合はエラー', () => {
+    const result = parse('workflow =')
+    expect(result.errors).toHaveLength(1)
+    expect(result.errors[0].message).toContain('名前')
+  })
+
+  it('workflow に = がない場合はエラー', () => {
+    const text = 'workflow "注文する"\n  input: 注文書\n  output: 注文'
+    const result = parse(text)
+    expect(result.errors).toHaveLength(1)
+    expect(result.errors[0].message).toContain('=')
+  })
+
+  it('workflow に input: がない場合はエラー', () => {
+    const text = 'workflow "注文する" =\n  output: 注文'
+    const result = parse(text)
+    expect(result.errors).toHaveLength(1)
+    expect(result.errors[0].message).toContain('input:')
+  })
+
+  it('workflow に output: がない場合はエラー', () => {
+    const text = 'workflow "注文する" =\n  input: 注文書'
+    const result = parse(text)
+    expect(result.errors).toHaveLength(1)
+    expect(result.errors[0].message).toContain('output:')
+  })
+})
+
+describe('parse - substep 定義', () => {
+  it('単純な substep 定義をパースする', () => {
+    const text = 'substep "注文を検証する" =\n  input: 未検証注文\n  output: 検証済み注文 OR 検証エラー'
+    const result = parse(text)
+    expect(result.errors).toHaveLength(0)
+    expect(result.symbols.has('注文を検証する')).toBe(true)
+    expect(result.symbols.get('注文を検証する')!.kind).toBe('substep')
+  })
+
+  it('substep に名前がない場合はエラー', () => {
+    const result = parse('substep =')
+    expect(result.errors).toHaveLength(1)
+    expect(result.errors[0].message).toContain('名前')
+  })
+
+  it('substep に = がない場合はエラー', () => {
+    const text = 'substep "注文を検証する"\n  input: 未検証注文\n  output: 検証済み注文'
+    const result = parse(text)
+    expect(result.errors).toHaveLength(1)
+    expect(result.errors[0].message).toContain('=')
+  })
+
+  it('substep に input: がない場合はエラー', () => {
+    const text = 'substep "注文を検証する" =\n  output: 検証済み注文'
+    const result = parse(text)
+    expect(result.errors).toHaveLength(1)
+    expect(result.errors[0].message).toContain('input:')
+  })
+
+  it('substep に output: がない場合はエラー', () => {
+    const text = 'substep "注文を検証する" =\n  input: 未検証注文'
+    const result = parse(text)
+    expect(result.errors).toHaveLength(1)
+    expect(result.errors[0].message).toContain('output:')
+  })
+})
