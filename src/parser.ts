@@ -72,7 +72,7 @@ export function parse(text: string): ParseResult {
   const rawLines = text.split('\n')
 
   for (const group of groupLines(rawLines)) {
-    const fullText = group.lines.map(l => l.text).join(' ')
+    const fullText = group.lines.map(l => l.text.trim()).join(' ')
     const startLine = group.startLine
     const range = makeRange(startLine, 0, rawLines[startLine].length)
 
