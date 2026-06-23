@@ -2,6 +2,7 @@ import * as vscode from 'vscode'
 import { DmmlCompletionProvider } from './completionProvider'
 import { DmmlHoverProvider } from './hoverProvider'
 import { DmmlDiagnosticsProvider } from './diagnosticsProvider'
+import { createDocumentSymbolProvider } from './documentSymbolProvider'
 
 const SELECTOR: vscode.DocumentSelector = { language: 'dmml' }
 
@@ -18,7 +19,8 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.languages.registerHoverProvider(SELECTOR, new DmmlHoverProvider()),
     vscode.workspace.onDidChangeTextDocument(e => diagnostics.update(e.document)),
     vscode.workspace.onDidOpenTextDocument(doc => diagnostics.update(doc)),
-    vscode.workspace.onDidCloseTextDocument(doc => diagnostics.clear(doc.uri))
+    vscode.workspace.onDidCloseTextDocument(doc => diagnostics.clear(doc.uri)),
+    vscode.languages.registerDocumentSymbolProvider(SELECTOR, createDocumentSymbolProvider(vscode))
   )
 
   // すでに開かれているドキュメントにも診断を実行
